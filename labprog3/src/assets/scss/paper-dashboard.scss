@@ -1,0 +1,22 @@
+@import 'paper-dashboard/variables';
+@import 'paper-dashboard/mixins';
+
+@import "paper-dashboard/inputs";
+@import "paper-dashboard/buttons";
+
+@import "paper-dashboard/misc";
+@import "paper-dashboard/checkboxes-radio";
+@import "paper-dashboard/navbar";
+@import "paper-dashboard/dropdown";
+@import "paper-dashboard/images";
+@import "paper-dashboard/nucleo-outline";
+
+@import "paper-dashboard/sidebar-and-main-panel";
+@import "paper-dashboard/login";
+@import "paper-dashboard/footers";
+@import "paper-dashboard/fixed-plugin";
+@import "paper-dashboard/cards";
+@import "paper-dashboard/cards/card-stats";
+
+@import "paper-dashboard/responsive";
+@import "paper-dashboard/react/react-differences.scss";
