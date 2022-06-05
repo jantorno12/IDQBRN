@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Occurences {% endblock %}</h1>
+    {% for occurence in occ %}
+        <div class='occurence'>
+            <h3>#{{ occurence[0] }} Local: {{ occurence[1] }} Disease {{ occurence[2] }}</h3>
+            <i><p>({{ occurence[3] }} cases)</p></i>
+            <i><p>Added {{ occurence[4] }}</p></i>
+        </div>
+    {% endfor %}
+{% endblock %}
