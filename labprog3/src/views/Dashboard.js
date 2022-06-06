@@ -40,7 +40,7 @@ function Dashboard() {
                                             <p className="card-category">
                                                 Total de Doenças Mapeadas
                                             </p>
-                                            <CardTitle tag="h7">
+                                            <CardTitle tag="h6">
                                                 {
                                                     documento.total_doencas_mapeadas
                                                 }
@@ -69,7 +69,7 @@ function Dashboard() {
                                             <p className="card-category">
                                                 Doenças Escolhidas
                                             </p>
-                                            <CardTitle tag="h7">
+                                            <CardTitle tag="h6">
                                                 {documento.doenca_escolhida}
                                             </CardTitle>
                                             <p />
@@ -119,7 +119,7 @@ function Dashboard() {
                                             <p className="card-category">
                                                 Estado com mais ocorrências
                                             </p>
-                                            <CardTitle tag="h10">
+                                            <CardTitle tag="h6">
                                                 {
                                                     documento.estado_maior_ocorrencia
                                                 }
@@ -142,7 +142,7 @@ function Dashboard() {
                     <Col md="12">
                         <Card>
                             <CardHeader>
-                                <CardTitle tag="h5">
+                                <CardTitle tag="h6">
                                     Mapemento das Doenças
                                 </CardTitle>
                                 {/* <p className="card-category">Mapa de Calor</p> */}
