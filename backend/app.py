@@ -100,25 +100,32 @@ def delete():
         
         return 'Done!', 200
 
-# @app.route('/admin/update', methods=["POST"])
-# def update():
+@app.route('/admin/update', methods=["POST"])
+def update():
     
-#     if request.method == 'POST':
+    if request.method == 'POST':
         
         
-#         data_update = request.get_json()
-#         print(data_update)
+        data_update = request.get_json()
+        print(data_update)
 
-#         print(data_update.name)
+        
 
-#         conn = get_db_connection()
-#         cur = conn.cursor()
+        conn = get_db_connection()
+        cur = conn.cursor()
 
 
-#         cur.execute('SELECT id FROM disease WHERE name = %s',(data_update.name,))
+        cur.execute('SELECT id FROM disease WHERE name = %s',(data_update["name"],))
+
+
+        occ = cur.fetchall()
+        print(occ[0][0])
+
+        cur.execute('UPDATE disease SET prevalence= %s, risk_area= %s, agent = %s, contagion= %s, prev_measures = %s, transmissibility= %s, symptoms = %s, reference_health_units = %s'
+                    'WHERE name = %s',(data_update['prev'], data_update['area'], data_update['agnt'], data_update['cont'], data_update['mprev'], data_update['trans'], data_update['apclin'], data_update['unref'], data_update['name'], ))
         # cur.execute('INSERT INTO disease (name, prevalence, risk_area, agent, contagion, prev_measures, transmissibility, symptoms, reference_health_units)'
         #             'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
-        #             (data_doenca['name'], data_doenca['prev'], data_doenca['area'], data_doenca['agnt'], data_doenca['cont'], data_doenca['mprev'], data_doenca['trans'], data_doenca['apclin'], data_doenca['unref']))
+        #             (data_update['name'], data_doenca['prev'], data_doenca['area'], data_doenca['agnt'], data_doenca['cont'], data_doenca['mprev'], data_doenca['trans'], data_doenca['apclin'], data_doenca['unref']))
         
         # print("Usuário tentou se logar.")
 
@@ -133,19 +140,54 @@ def delete():
         # cur.execute('DELETE FROM disease WHERE id = %s;', (id,))
 
         # conn.commit()
-        # conn.commit()
-        # cur.close()
-        # conn.close()
+        conn.commit()
+        cur.close()
+        conn.close()
         
-        # return 'Done!', 200
+        return 'Done!', 200
 
 @app.route('/admin/data-doenca', methods=["GET", "POST"])
 def data_doenca():
 
     if request.method == 'POST':
         data_usuario = request.get_json()
-        print((data_usuario[0]))
+        print(data_usuario[0])
         print("Usuário postou data doenca.")
+
+        # Insere dados na tabela locais
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+        for i in range(len(data_usuario)):
+            cur.execute('INSERT INTO local (UF, Municipio, IBGE, IBGE7, latitude, longitude, region, population, porte)'
+                        'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                        (data_usuario[i]['UF'], data_usuario[i]['Municipio'], data_usuario[i]['IBGE'], data_usuario[i]['IBGE7'], data_usuario[i]['latitude'], data_usuario[i]['longitude'], data_usuario[i]['Região'], data_usuario[i]['População 2010'], data_usuario[i]['Porte'],))
+        conn.commit()
+        cur.close()
+        conn.close()
+
+
+        # Insere dados na tabela ocorrencia
+        # conn = get_db_connection()
+        # cur = conn.cursor()
+        # for i in range(len(data_usuario)):
+
+        #     cur.execute('SELECT id FROM local WHERE Municipio = %s',(data_usuario[i]['Municipio'],))
+
+        #     occ = cur.fetchall()
+        #     print(occ[0][0])
+
+        #     id_local = occ[0][0]
+
+        #     cur.execute('SELECT disease_id FROM occurrences WHERE local_id = %s',(id_local,))
+        #     cur.execute('DELETE FROM local WHERE id = %s;', (id,))
+        #     cur.execute('DELETE FROM disease WHERE id = %s;', (id,))
+
+        # conn.commit()
+        # cur.close()
+        # conn.close()
+
+
         return 'Done!', 200
 
 
