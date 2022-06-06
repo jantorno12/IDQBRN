@@ -25,7 +25,7 @@ documento_enviado = {
 @app.route('/admin/dashboard', methods=["GET", "POST"])
 def dashboard():
 
-    if request.method == 'POST':
+    if request.method == 'POST' :
         data_usuario = request.get_json()
         print(data_usuario)
         print("Usuário tentou se logar.")
@@ -36,7 +36,7 @@ def dashboard():
 @app.route('/admin/user-page', methods=["GET", "POST"])
 def user_page():
 
-    if request.method == 'POST':
+    if request.method == 'POST' :
         data_doenca = request.get_json()
         print(data_doenca)
 
@@ -53,10 +53,9 @@ def user_page():
         return 'Done!', 200
 
 @app.route('/admin/data-dis', methods=["GET"])
-
 def data_dis():
 
-    if request.method == 'GET':
+    if request.method == 'GET' :
         
         conn = get_db_connection()
         cur = conn.cursor()
@@ -76,22 +75,77 @@ def data_dis():
 
         return banco
 
-
 @app.route('/admin/delete', methods=["POST"])
 def delete():
-
+    
     if request.method == 'POST':
-
-        data_usuario = request.get_json()
+        
+        
+        data_remove = request.get_json()
+        print(data_remove['doenca_removida'])
         conn = get_db_connection()
         cur = conn.cursor()
-        print(data_usuario)
+        
         print("Usuário tentou se logar.")
-        id = cur.execute('SELECT id FROM disease WHERE name = %s;', data_usuario)
-        cur.execute('DELETE FROM occurrence WHERE id_disease= %d;', id)
-        cur.execute('DELETE FROM disease WHERE id = %d;', id)
+        cur.execute('SELECT id FROM disease WHERE name = %s',(data_remove['doenca_removida'],))
+
+        occ = cur.fetchall()
+        print(occ[0][0])
+
+        id = occ[0][0]
+        cur.execute('DELETE FROM occurrence WHERE disease_id = %s;', (id,))
+        cur.execute('DELETE FROM disease WHERE id = %s;', (id,))
+
         conn.commit()
         
+        return 'Done!', 200
+
+# @app.route('/admin/update', methods=["POST"])
+# def update():
+    
+#     if request.method == 'POST':
+        
+        
+#         data_update = request.get_json()
+#         print(data_update)
+
+#         print(data_update.name)
+
+#         conn = get_db_connection()
+#         cur = conn.cursor()
+
+
+#         cur.execute('SELECT id FROM disease WHERE name = %s',(data_update.name,))
+        # cur.execute('INSERT INTO disease (name, prevalence, risk_area, agent, contagion, prev_measures, transmissibility, symptoms, reference_health_units)'
+        #             'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
+        #             (data_doenca['name'], data_doenca['prev'], data_doenca['area'], data_doenca['agnt'], data_doenca['cont'], data_doenca['mprev'], data_doenca['trans'], data_doenca['apclin'], data_doenca['unref']))
+        
+        # print("Usuário tentou se logar.")
+
+
+        # cur.execute('SELECT id FROM disease WHERE name = %s',(data_remove['doenca_removida'],))
+
+        # occ = cur.fetchall()
+        # print(occ[0][0])
+
+        # id = occ[0][0]
+        # cur.execute('DELETE FROM occurrence WHERE disease_id = %s;', (id,))
+        # cur.execute('DELETE FROM disease WHERE id = %s;', (id,))
+
+        # conn.commit()
+        # conn.commit()
+        # cur.close()
+        # conn.close()
+        
+        # return 'Done!', 200
+
+@app.route('/admin/data-doenca', methods=["GET", "POST"])
+def data_doenca():
+
+    if request.method == 'POST':
+        data_usuario = request.get_json()
+        print((data_usuario[0]))
+        print("Usuário postou data doenca.")
         return 'Done!', 200
 
 

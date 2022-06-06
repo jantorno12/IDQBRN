@@ -17,37 +17,28 @@ import {
 
 const axios = require('axios').default;
 
-function Delete(history){
+function Delete({history}){
 
+    const [doenca_removida, setName] = useState('');
+    const [prevx, setPrev] = useState('');
   
-    const [name, setName] = useState('');
-
-    const cadastro = {name}
+    const remocao = {doenca_removida}
+    
 
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log({nome:data.get("name")})
-        console.log(cadastro)
+        //console.log({nome:data.get(name)})
+        console.log(remocao)
         //Envia para o backend
-        axios.post('http://localhost:5000/admin/delete',cadastro)
+        axios.post('http://localhost:5000/admin/delete', remocao)
         .then((response)=>{
-        history.push('/dashboard')
+            history.push('/dashboard')
         })
         .catch(function (error) {
-        console.log(error);
+            console.log(error);
         });
     };
-
-    // Envia para o backend
-    function enter(){
-        axios.post('http://localhost:5000/admin/', {
-        usuario: name
-        })
-        .catch(function (error) {
-        console.log(error);
-        });
-    }
 
     return(
         <div className="content">
@@ -65,7 +56,7 @@ function Delete(history){
                                         <Input
                                         placeholder="doenca"
                                         type="text"
-                                        value = {name}
+                                        value = {doenca_removida}
                                         onChange={(e)=>setName(e.target.value)}
                                         />
                                         {/* <option value="esquistossomose">Esquistossomose</option>
@@ -83,7 +74,8 @@ function Delete(history){
                                             className="btn-round"
                                             color="danger"
                                             type="submit"
-
+                                            name= "btn"
+                                            value = "remover"
                                         >
                                             Remover Doença
                                         </Button>

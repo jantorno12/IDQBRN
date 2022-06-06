@@ -111,7 +111,11 @@ function Login() {
                 </div>
               </FormGroup>
               <FormGroup>
-                <Button color="primary" type="submit" onSubmit={handleSubmit}>
+                <Button color="primary" 
+                  type="submit" 
+                  onSubmit={handleSubmit}
+                  name= "btn"
+                  value = "entrar" >
                   Entrar
                 </Button>
               </FormGroup>

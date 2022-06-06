@@ -173,6 +173,8 @@ function User({history}) {
                           className="btn-round"
                           color="primary"
                           type="submit"
+                          name= "btn"
+                          value = "cadastrar"
                         >
                           Cadastrar
                         </Button>
