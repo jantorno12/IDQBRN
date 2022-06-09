@@ -61,6 +61,7 @@ def data_dis():
         cur = conn.cursor()
         cur.execute('SELECT name, prevalence, risk_area, agent, contagion, prev_measures, transmissibility, symptoms, reference_health_units  FROM disease;')
         occ = cur.fetchall()
+        print(occ)
         
 
         conn.commit()
@@ -159,12 +160,58 @@ def data_doenca():
         conn = get_db_connection()
         cur = conn.cursor()
         for i in range(len(data_usuario)):
-            cur.execute('INSERT INTO local (UF, Municipio, IBGE, IBGE7, latitude, longitude, region, population, porte)'
-                        'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
-                        (data_usuario[i]['UF'], data_usuario[i]['Municipio'], data_usuario[i]['IBGE'], data_usuario[i]['IBGE7'], data_usuario[i]['latitude'], data_usuario[i]['longitude'], data_usuario[i]['Região'], data_usuario[i]['População 2010'], data_usuario[i]['Porte'],))
+            cur.execute('SELECT id FROM local WHERE Municipio = %s',(data_usuario[i]['Municipio'],))
+            occ = cur.fetchall()
+            if(len(occ)==0):
+                cur.execute('INSERT INTO local (UF, Municipio, IBGE, IBGE7, latitude, longitude, region, population, porte)'
+                            'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                            (data_usuario[i]['UF'], data_usuario[i]['Municipio'], data_usuario[i]['IBGE'], data_usuario[i]['IBGE7'], data_usuario[i]['latitude'], data_usuario[i]['longitude'], data_usuario[i]['Região'], data_usuario[i]['População 2010'], data_usuario[i]['Porte'],))
+            else:
+                cur.execute('UPDATE local SET IBGE= %s, IBGE7= %s, population= %s, porte= %s'
+                    'WHERE id = %s',(data_usuario[i]['IBGE'], data_usuario[i]['IBGE7'] , data_usuario[i]['População 2010'], data_usuario[i]['Porte'], occ[0][0],))
+
+        for i in range(len(data_usuario)):
+
+            # pega o id do municipio
+            cur.execute('SELECT id FROM local WHERE Municipio = %s',(data_usuario[i]['Municipio'],))
+            occ = cur.fetchall()
+            print(occ[0][0])
+            id_local = occ[0][0]
+
+            # confere se a doença esta no banco, e se tiver, pega o id dela
+
+            list_keys = list(data_usuario[i].keys())
+            print(list_keys)
+            list_diseases = []
+            for j in range(list_keys.index('Porte')+1,len(list_keys),1):
+                list_diseases.append(list_keys[j])
+
+                amount = data_usuario[i][list_keys[j]]
+
+                cur.execute('SELECT id FROM disease WHERE name = %s',(list_keys[j],))
+                occ = cur.fetchall()
+                
+                
+
+                if(len(occ)!=0 and amount!= '0'):
+                    print(occ)
+                    id_disease = occ[0][0]
+                    cur.execute('SELECT id FROM occurrence WHERE disease_id = %s and local_id = %s',(id_disease, id_local,))
+                    occ = cur.fetchall()
+                    if(len(occ)==0):
+                        cur.execute('INSERT INTO occurrence (local_id, disease_id, amount)'
+                            'VALUES (%s, %s, %s)',
+                            (id_local, id_disease, amount,))
+                    else:
+                        cur.execute('UPDATE occurrence SET amount= %s'
+                            'WHERE local_id = %s and disease_id = %s',(amount, id_local, id_disease,))
+
+
+
         conn.commit()
         cur.close()
         conn.close()
+        return 'Done!', 200
 
 
         # Insere dados na tabela ocorrencia

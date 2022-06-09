@@ -30,7 +30,7 @@ cur.execute('CREATE TABLE disease (id serial PRIMARY KEY,'
 cur.execute('DROP TABLE IF EXISTS local CASCADE;')
 cur.execute('CREATE TABLE local (id serial PRIMARY KEY,'
                                  'UF varchar (5) NOT NULL,'
-                                 'Municipio varchar (250),'
+                                 'Municipio varchar (250) PRIMARY KEY,'
                                  'IBGE varchar (250),'
                                  'IBGE7 varchar (250),'
                                  'latitude varchar (250),'
