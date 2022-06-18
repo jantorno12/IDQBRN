@@ -14,13 +14,7 @@ def get_db_connection():
                             password=os.environ['DB_PASSWORD'])
     return conn
 
-documento_enviado = {
-    'total_doencas_mapeadas': 12,
-    'doenca_escolhida': 'Dengue',
-    'numero_casos_totais': 100000,
-    'estado_maior_ocorrencia': 'Amazonas',
-    'lista_marcadores_mapa': [[-16.7573, -49.4412], [-18.4831, -47.3916], [-16.197, -48.7057]]
-}
+
 
 @app.route('/admin/dashboard', methods=["GET", "POST"])
 def dashboard():
@@ -31,6 +25,45 @@ def dashboard():
         print("Usuário tentou se logar.")
         return 'Done!', 200
     elif request.method == 'GET':
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('SELECT DISTINCT COUNT(name) FROM disease;')
+        total_doencas = cur.fetchall()
+        conn.commit()
+        cur.close()
+        conn.close()
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('SELECT SUM(amount::int) FROM occurrence;')
+        total_casos = cur.fetchall()
+        # print(total_casos)
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('''
+        WITH base AS (SELECT l.UF, SUM(o.amount::int)
+        FROM occurrence o 
+        JOIN local l ON l.id = o.local_id
+        GROUP BY 1
+        ORDER BY 2 DESC)
+        SELECT UF FROM base LIMIT 1;
+        ''')
+        estado_alerta = cur.fetchall()
+        # print(total_casos)
+        conn.commit()
+        cur.close()
+        conn.close()
+        documento_enviado = {
+        'total_doencas_mapeadas': total_doencas[0][0],
+        'doenca_escolhida': 'Dengue',
+        'numero_casos_totais': total_casos,
+        'estado_maior_ocorrencia': estado_alerta,
+        'lista_marcadores_mapa': [[-16.7573, -49.4412], [-18.4831, -47.3916], [-16.197, -48.7057]]
+    }
         return documento_enviado
 
 @app.route('/admin/user-page', methods=["GET", "POST"])
