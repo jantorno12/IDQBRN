@@ -30,7 +30,7 @@ cur.execute('CREATE TABLE disease (id serial PRIMARY KEY,'
 cur.execute('DROP TABLE IF EXISTS local CASCADE;')
 cur.execute('CREATE TABLE local (id serial PRIMARY KEY,'
                                  'UF varchar (5) NOT NULL,'
-                                 'Municipio varchar (250) PRIMARY KEY,'
+                                 'Municipio varchar (250),'
                                  'IBGE varchar (250),'
                                  'IBGE7 varchar (250),'
                                  'latitude varchar (250),'
@@ -57,30 +57,30 @@ cur.execute('''CREATE TABLE occurrence (id serial PRIMARY KEY,
                                  
 
 # Insert data into the table
-sql_disease = '''
-    INSERT INTO disease (name, prevalence, risk_area, agent, contagion, prev_measures, transmissibility, reference_health_units, symptoms)
-        VALUES ('Malaria', 20000,'Manaus','Plasmodium','Picada do mosquito ou transfusão de sangue',
-        'Uso de mosquiteiros, repelentes e roupas que protejam pernas e bracos',
-        '7 a 12 dias','','')
-'''
+# sql_disease = '''
+#     INSERT INTO disease (name, prevalence, risk_area, agent, contagion, prev_measures, transmissibility, reference_health_units, symptoms)
+#         VALUES ('Malaria', 20000,'Manaus','Plasmodium','Picada do mosquito ou transfusão de sangue',
+#         'Uso de mosquiteiros, repelentes e roupas que protejam pernas e bracos',
+#         '7 a 12 dias','','')
+# '''
 
-sql_local = '''
-    INSERT INTO local (UF, Municipio, IBGE, IBGE7, latitude, longitude, region, population, porte)
-           VALUES
-           ('RJ', 'Maricá', 330270, 3302700, -22.9354, -42.8246,'Região Sudeste', 127461,'Grande'),
-           ('SP', 'Avaí', 350430, 3504305, -22.1514, -49.3356,    'Região Sudeste', 4959, 'Pequeno I')
-'''
+# sql_local = '''
+#     INSERT INTO local (UF, Municipio, IBGE, IBGE7, latitude, longitude, region, population, porte)
+#            VALUES
+#            ('RJ', 'Maricá', 330270, 3302700, -22.9354, -42.8246,'Região Sudeste', 127461,'Grande'),
+#            ('SP', 'Avaí', 350430, 3504305, -22.1514, -49.3356,    'Região Sudeste', 4959, 'Pequeno I')
+# '''
 
-sql_occur = '''
-    INSERT INTO occurrence (local_id, disease_id, amount)
-           VALUES
-           (1,1,200),
-           (2,1,350)
-'''
+# sql_occur = '''
+#     INSERT INTO occurrence (local_id, disease_id, amount)
+#            VALUES
+#            (1,1,200),
+#            (2,1,350)
+# '''
 
-cur.execute(sql_disease)
-cur.execute(sql_local)
-cur.execute(sql_occur)
+# cur.execute(sql_disease)
+# cur.execute(sql_local)
+# cur.execute(sql_occur)
 
 
 conn.commit()

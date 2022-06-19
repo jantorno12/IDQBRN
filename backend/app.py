@@ -21,7 +21,7 @@ def dashboard():
 
     if request.method == 'POST' :
         data_usuario = request.get_json()
-        print(data_usuario)
+
         print("Usuário tentou se logar.")
         return 'Done!', 200
     elif request.method == 'GET':
@@ -35,9 +35,24 @@ def dashboard():
         
         conn = get_db_connection()
         cur = conn.cursor()
+        cur.execute('''
+        WITH base AS (SELECT d.name, SUM(o.amount::int)
+        FROM occurrence o 
+        JOIN disease d ON d.id = o.disease_id
+        GROUP BY d.name
+        ORDER BY 2 DESC)
+        SELECT name FROM base LIMIT 1;
+        ''')
+        maior_doença = cur.fetchall()
+        conn.commit()
+        cur.close()
+        conn.close()
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
         cur.execute('SELECT SUM(amount::int) FROM occurrence;')
         total_casos = cur.fetchall()
-        # print(total_casos)
+
         conn.commit()
         cur.close()
         conn.close()
@@ -53,17 +68,27 @@ def dashboard():
         SELECT UF FROM base LIMIT 1;
         ''')
         estado_alerta = cur.fetchall()
-        # print(total_casos)
+
         conn.commit()
         cur.close()
         conn.close()
-        documento_enviado = {
-        'total_doencas_mapeadas': total_doencas[0][0],
-        'doenca_escolhida': 'Dengue',
-        'numero_casos_totais': total_casos,
-        'estado_maior_ocorrencia': estado_alerta,
-        'lista_marcadores_mapa': [[-16.7573, -49.4412], [-18.4831, -47.3916], [-16.197, -48.7057]]
-    }
+
+        if(len(total_doencas)== 0):
+            documento_enviado = {
+                'total_doencas_mapeadas': " ",
+                'doenca_escolhida': " ",
+                'numero_casos_totais': " ",
+                'estado_maior_ocorrencia': " ",
+                'lista_marcadores_mapa': [[-16.7573, -49.4412], [-18.4831, -47.3916], [-16.197, -48.7057]]
+            }
+        else:
+            documento_enviado = {
+                'total_doencas_mapeadas': total_doencas[0][0],
+                'doenca_escolhida': maior_doença[0][0],
+                'numero_casos_totais': total_casos[0][0],
+                'estado_maior_ocorrencia': estado_alerta[0][0],
+                'lista_marcadores_mapa': [[-16.7573, -49.4412], [-18.4831, -47.3916], [-16.197, -48.7057]]
+            }
         return documento_enviado
 
 @app.route('/admin/user-page', methods=["GET", "POST"])
@@ -71,7 +96,7 @@ def user_page():
 
     if request.method == 'POST' :
         data_doenca = request.get_json()
-        print(data_doenca)
+
 
         conn = get_db_connection()
         cur = conn.cursor()
@@ -94,7 +119,7 @@ def data_dis():
         cur = conn.cursor()
         cur.execute('SELECT name, prevalence, risk_area, agent, contagion, prev_measures, transmissibility, symptoms, reference_health_units  FROM disease;')
         occ = cur.fetchall()
-        print(occ)
+
         
 
         conn.commit()
@@ -116,7 +141,7 @@ def delete():
         
         
         data_remove = request.get_json()
-        print(data_remove['doenca_removida'])
+
         conn = get_db_connection()
         cur = conn.cursor()
         
@@ -124,7 +149,7 @@ def delete():
         cur.execute('SELECT id FROM disease WHERE name = %s',(data_remove['doenca_removida'],))
 
         occ = cur.fetchall()
-        print(occ[0][0])
+
 
         id = occ[0][0]
         cur.execute('DELETE FROM occurrence WHERE disease_id = %s;', (id,))
@@ -141,7 +166,7 @@ def update():
         
         
         data_update = request.get_json()
-        print(data_update)
+
 
         
 
@@ -153,7 +178,7 @@ def update():
 
 
         occ = cur.fetchall()
-        print(occ[0][0])
+
 
         cur.execute('UPDATE disease SET prevalence= %s, risk_area= %s, agent = %s, contagion= %s, prev_measures = %s, transmissibility= %s, symptoms = %s, reference_health_units = %s'
                     'WHERE name = %s',(data_update['prev'], data_update['area'], data_update['agnt'], data_update['cont'], data_update['mprev'], data_update['trans'], data_update['apclin'], data_update['unref'], data_update['name'], ))
@@ -185,7 +210,7 @@ def data_doenca():
 
     if request.method == 'POST':
         data_usuario = request.get_json()
-        print(data_usuario[0])
+
         print("Usuário postou data doenca.")
 
         # Insere dados na tabela locais
@@ -208,13 +233,13 @@ def data_doenca():
             # pega o id do municipio
             cur.execute('SELECT id FROM local WHERE Municipio = %s',(data_usuario[i]['Municipio'],))
             occ = cur.fetchall()
-            print(occ[0][0])
+            
             id_local = occ[0][0]
 
             # confere se a doença esta no banco, e se tiver, pega o id dela
 
             list_keys = list(data_usuario[i].keys())
-            print(list_keys)
+
             list_diseases = []
             for j in range(list_keys.index('Porte')+1,len(list_keys),1):
                 list_diseases.append(list_keys[j])
@@ -227,7 +252,7 @@ def data_doenca():
                 
 
                 if(len(occ)!=0 and amount!= '0'):
-                    print(occ)
+
                     id_disease = occ[0][0]
                     cur.execute('SELECT id FROM occurrence WHERE disease_id = %s and local_id = %s',(id_disease, id_local,))
                     occ = cur.fetchall()
