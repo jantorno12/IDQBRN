@@ -67,7 +67,7 @@ function Dashboard() {
                                     <Col>
                                         <div className="numbers">
                                             <p className="card-category">
-                                                Doenças Escolhidas
+                                                Doença com maior incidência
                                             </p>
                                             <CardTitle tag="h6">
                                                 {documento.doenca_escolhida}
@@ -143,7 +143,7 @@ function Dashboard() {
                         <Card>
                             <CardHeader>
                                 <CardTitle tag="h6">
-                                    Mapemento das Doenças
+                                    Cidades por estado com mais doenças registradas
                                 </CardTitle>
                                 {/* <p className="card-category">Mapa de Calor</p> */}
                             </CardHeader>

@@ -82,12 +82,51 @@ def dashboard():
                 'lista_marcadores_mapa': [[-16.7573, -49.4412], [-18.4831, -47.3916], [-16.197, -48.7057]]
             }
         else:
+
+            vetor_UF = ["AC", "AL", "AM", "AP",
+                         "BA", "CE", "DF", "ES", "GO"
+                         , "MA", "MG", "MS", "MT"
+                         , "PA", "PB", "PE", "PI", "PR"
+                         , "RJ", "RN", "RO", "RR", "RS"
+                         , "SC", "SE", "SP", "TO"]            
+            posicoes = []
+            for uf in range(len(vetor_UF)):
+                coordenadas = []
+                conn = get_db_connection()
+                cur = conn.cursor()
+                cur.execute('''
+                    WITH base as (
+                    SELECT local_id, SUM(amount::int) as amount
+                    FROM occurrence
+                    GROUP BY 1
+                    ), base1 as(
+                    SELECT b.local_id, b.amount
+                    FROM base b JOIN local l on b.local_id = l.id
+                    WHERE l.UF = %s
+                    ORDER BY amount DESC
+                    LIMIT 1
+                    ) SELECT latitude, longitude
+                    FROM base1 JOIN local on base1.local_id = local.id
+                ''', (vetor_UF[uf],))
+                latitude = cur.fetchall()
+
+                coordenadas.append(float(latitude[0][0].replace(",",".")))
+                coordenadas.append(float(latitude[0][1].replace(",",".")))
+
+                posicoes.append(coordenadas)    
+                conn.commit()
+                cur.close()
+                conn.close()
+
+            print(posicoes)
+
+
             documento_enviado = {
                 'total_doencas_mapeadas': total_doencas[0][0],
                 'doenca_escolhida': maior_doença[0][0],
                 'numero_casos_totais': total_casos[0][0],
                 'estado_maior_ocorrencia': estado_alerta[0][0],
-                'lista_marcadores_mapa': [[-16.7573, -49.4412], [-18.4831, -47.3916], [-16.197, -48.7057]]
+                'lista_marcadores_mapa': posicoes
             }
         return documento_enviado
 
